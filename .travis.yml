@@ -1,4 +1,6 @@
-language: php
+language: 
+  - php
+
 php:
   - '7.0'
 env:
