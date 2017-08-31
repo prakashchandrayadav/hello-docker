@@ -1,4 +1,20 @@
 language: php
 php:
-  - '7.0'
-  
+- '7.0'
+env:
+  global:
+  - secure: aXZez9rZBfKICv/nsh29ea2mKPT1MpmD6M19K32VvSjFLogM8uVUydkh8S8s17mSlMLJ4pbziXj4hZXmfXf71uh4Zg0iHSqhiQEvuHHGC7z9McjDkO40QofqUHe512JBKmgsAchEhz23UrJsJgJd6udPGeO2UOV6b7XuX7+78C1aEQQsf/ACTvRwcc8gpFXQ8WeiErfwH0gqa7iqJZ2jpC5k+uWCmP9BYYtPNMbr8xCUHuAXY08e7uJpMCm0a60DRz2aSZpnvibDfY6Pauy6uL6sdP+L4ZTS4NzWVSrhR0XtjJNvab8S+l5RxzYKJn40SjrLsHtEVdLW1uM7KDx8SSxQcjseXJDikEv8TgTsgafHd0FpBLwbkypmPqxgNaeHubym10D4q2Jq/B3zToQey0aW8VK2HssNOBWMwjhGfVl+3gfpdgAIAy8xlnursvkJAXDh7ERD1/+SfgesNNACpPUSPUTNctuViFA6jXbAxoBlw+cx0sSXtZcgV0TJFqngdEICC4denFIiTB64e0OxEUxxYqzQxxm34kYrFQ7VjcaLVPJ1Q822REdRhEkBYb/L8QZAkv/FI7Gpjz0v7RLY+vnxq96ZD5DlNpCTXbUsAvLaGf6Qbd6rw93DPmkmLSSgaXDC93/CjcMjSa7r9Rp2l+QagM9gfKpH0vPImQI+OUw=
+  - secure: YBq4mrZHCmzxA+GZevHXq7klNhBT9jRrVxalpJrEgDG4FG4i2hbNOcSuRiwiLL5wq5iF2DryTmuvC3goppRpptZ3RALEjOfpmlrhygvERqrUPdzJ8RB31UWtblEf5ccbe+9CZxJpOvp5DRQmy2o/bwkBHI9YgofdnNjmsQp8hYeagSppbfcVbDUZxhWUmCQmDQ5bdkUL8wsoGINQTZuSnNJS8Ezcq56NRGoBDFCy9tvaVxMmSe6rE/mSpv+1OeXwapXlm4iYlWYAtATtEIRtGrffWLeolo+ZgvioQRCZpXSWvcaLgwILej7YEvFiRLnYIPHRXeve9V/8whE/TM2DovKMGqMqYsEQ/6jrguQkFxxpQ6+IRLTlcCMRaMrnJ5h9Nxc2OzNPwD+MZ7rQpU1IrfjOkKIVORphu1IdsLMtxd4XJw3liqoWwOyuJWqjZxjPI758QG/DXneZUuYLjfVaXysc2soVyvM9taiu6tIaKm/3jFZHUreDpv358fHWYWIrxC6pw2QwZmSmrfnesLbTKbIlB9zLAJ/h++lYNGROuXTxRhMyCe8EYictvg326Osv7qnZcA/4Lqz7v3YqLgF4Dju6d6CR6FNfEABg4exBeOf1ZZrW2TPxC4/djK+r/nwmBFNI/e2ez7sq0s7c0bz/iZ/dhnfao4Qg2GNTabAPuTk=
+  - secure: H3XnNtQl5+4xuuBwBnjezq07zz6cRnXaLP2GrA0Z9v9gI4dngwUEKtIoctOAwLNSCctvrxSOZzfJphcxUISzHtTjHAVFfQYSls9EMvLFIS3gA19k3voQrAkVQrnLV89Wy0MQ+ID9BwP9ZY9f9OIrimQk1hIUZ6eT90AwrQ1kgKVs1XY0FZjYdV0I+LVL77/QUgShVKBAvYarUKXPkM6dI6nD4Z14KH1xVBvNYEPmPFi6FXhoOVEzWG54QFymNmQieURnzKOyV7YMZc9lJHB3s4KMnwWAyyVuCzfguByhX8Ohj96OcG/AS1ez5BBs2bYxC6L7qztYIECsvkbCt9JAL5Xn9myTozyoB+VskeTTcGEcXQcLcfFMe0+umE91ISq1OQ0Zqz+BEj5L5seun755HN5RdI7i2lPTrsyYJfWX9AvCR9H1HxEae3GsSXiZWa9gC+evIpV/ksX7jLgrlu7iYjfwenaGJF1l67BmpPuJC0bfWOPYwYa0p6NZa36o96Zbel3ZIRxa68J2doYPfxq5s+q7kBKwLXY9YshMdXGML7oQWIo9eRBgAOeve/zDJK385uVjJfu8xoEQcD/oZ0YXP0jDhCykuxBs3DVf06DuVKCn3LTum1IUHRzhrP6NGD2E7XWRkzNyXaqctmdE9NCHxcORp+fiXZUje3YYCHHcUvk=
+services:
+- docker
+after_success:
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO=sebestblog/hello-docker
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build -f Dockerfile -t $REPO:$COMMIT .
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $REPO
+ on:
+   branch: master
